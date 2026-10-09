@@ -1,3 +1,4 @@
+
 import os
 import json
 import re
@@ -6,19 +7,16 @@ import gradio as gr
 from dotenv import load_dotenv
 from google import genai
 
-# Load API key from .env file
+# Load API key from environment
 load_dotenv()
-
 api_key = os.getenv("GEMINI_API_KEY")
-
 client = genai.Client(api_key=api_key) if api_key else None
 
 
-# Call Gemini AI
 def ask_gemini(prompt):
     if client is None:
         raise ValueError(
-            "API key not found. Check GEMINI_API_KEY in your .env file."
+            "API key not found. Set GEMINI_API_KEY in environment variables."
         )
 
     last_error = None
@@ -29,29 +27,23 @@ def ask_gemini(prompt):
                 model="gemini-3.8-flash",
                 contents=prompt
             )
-
             if not response.text:
                 raise ValueError("AI returned an empty response.")
-
             return response.text
-
         except Exception as e:
             last_error = e
             message = str(e).upper()
-
             if (
                 ("503" in message or "UNAVAILABLE" in message)
                 and attempt < 2
             ):
                 time.sleep(2 * (attempt + 1))
                 continue
-
             raise last_error
 
     raise last_error
 
 
-# Generate summary and important points
 def study_assistant(notes):
     if not notes or not notes.strip():
         return "Please enter your study notes.", ""
@@ -59,11 +51,9 @@ def study_assistant(notes):
     try:
         prompt = f"""
 You are a helpful student study assistant.
-
-Read the notes below and provide:
-1. A simple, easy-to-understand summary.
+Provide:
+1. A simple summary.
 2. Exactly five important points.
-
 Use simple English.
 
 Follow this format:
@@ -82,35 +72,29 @@ STUDY NOTES:
 {notes}
 """
         answer = ask_gemini(prompt)
-
         parts = re.split(
             r"IMPORTANT POINTS\s*:",
             answer,
             maxsplit=1,
             flags=re.IGNORECASE
         )
-
         summary = parts[0].strip()
         points = parts[1].strip() if len(parts) > 1 else ""
-
         return summary, points
-
     except Exception as e:
         return f"Summary error: {e}", ""
 
 
-# Generate quiz questions
 def make_quiz(notes):
     if not notes or not notes.strip():
         return [], "Please enter your study notes first."
 
     try:
         prompt = f"""
-Create exactly 5 multiple-choice quiz questions using the study notes.
+Create exactly 5 multiple-choice questions from these study notes.
+Return ONLY valid JSON, with no Markdown code fences.
 
-Return ONLY valid JSON. Do not use Markdown code fences.
-
-Use this exact structure:
+Use this structure:
 {{
   "questions": [
     {{
@@ -123,26 +107,21 @@ Use this exact structure:
 }}
 
 Rules:
-- Create exactly 5 questions.
-- Each question must have exactly 4 options.
-- The answer must be an integer from 0 to 3.
-- The answer index must match the correct option.
+- Exactly 5 questions.
+- Exactly 4 options per question.
+- answer is an integer from 0 to 3 and identifies the correct option.
 - Explanations must be short and simple.
 
 STUDY NOTES:
 {notes}
 """
-
         response = ask_gemini(prompt)
-
-        # Remove Markdown code fences if present
         cleaned = re.sub(
             r"^```(?:json)?\s*|\s*```$",
             "",
             response.strip(),
             flags=re.IGNORECASE
         )
-
         data = json.loads(cleaned)
         questions = data.get("questions", [])
 
@@ -152,32 +131,20 @@ STUDY NOTES:
         for q in questions:
             if not isinstance(q.get("question"), str):
                 raise ValueError("A question is missing.")
-
-            if not isinstance(q.get("options"), list):
-                raise ValueError("Question options are missing.")
-
-            if len(q["options"]) != 4:
+            if not isinstance(q.get("options"), list) or len(q["options"]) != 4:
                 raise ValueError("Each question must have 4 options.")
-
-            if not isinstance(q.get("answer"), int):
-                raise ValueError("The correct answer index is invalid.")
-
-            if q["answer"] not in range(4):
-                raise ValueError("The answer index must be 0, 1, 2, or 3.")
-
+            if not isinstance(q.get("answer"), int) or q["answer"] not in range(4):
+                raise ValueError("Answer index must be 0, 1, 2, or 3.")
             if not q.get("explanation"):
                 q["explanation"] = "Review the study notes."
 
         return questions, "Quiz generated successfully! Answer all 5 questions."
-
     except Exception as e:
         return [], f"Quiz generation failed: {type(e).__name__}: {e}"
 
 
-# Display quiz questions
 def display_quiz(questions):
     updates = []
-
     for i in range(5):
         if len(questions) == 5:
             q = questions[i]
@@ -198,18 +165,13 @@ def display_quiz(questions):
                     visible=False
                 )
             )
-
     updates.append(gr.update(visible=(len(questions) == 5)))
     return tuple(updates)
 
 
-# Check quiz answers
 def grade_quiz(questions, *answers):
     if len(questions) != 5:
-        return (
-            "Quiz was not generated. Check the Quiz Error box above "
-            "and try again."
-        )
+        return "Quiz was not generated. Check the Quiz Error box and try again."
 
     if any(answer is None for answer in answers):
         return "Please answer all 5 questions before submitting."
@@ -218,28 +180,23 @@ def grade_quiz(questions, *answers):
     feedback = []
 
     for i, (q, answer) in enumerate(zip(questions, answers)):
-        correct_index = q["answer"]
-        correct_option = q["options"][correct_index]
+        correct_option = q["options"][q["answer"]]
+        explanation = q.get("explanation", "")
 
         if answer == correct_option:
             score += 1
             feedback.append(
-                f"**Q{i + 1}: Correct!**\n\n"
-                f"{q.get('explanation', '')}"
+                f"**Q{i + 1}: Correct!**\n\n{explanation}"
             )
         else:
             feedback.append(
                 f"**Q{i + 1}: Incorrect.** Correct answer: "
-                f"{correct_option}\n\n{q.get('explanation', '')}"
+                f"{correct_option}\n\n{explanation}"
             )
 
-    result = f"# Your Score: {score}/5\n\n"
-    result += "\n\n".join(feedback)
-
-    return result
+    return f"# Your Score: {score}/5\n\n" + "\n\n".join(feedback)
 
 
-# User interface
 with gr.Blocks(title="AI Student Study Assistant") as app:
     gr.Markdown("# AI Student Study Assistant")
     gr.Markdown(
@@ -259,7 +216,6 @@ with gr.Blocks(title="AI Student Study Assistant") as app:
 
     gr.Markdown("## Study Summary")
     summary_output = gr.Markdown()
-
     gr.Markdown("## Important Points")
     points_output = gr.Markdown()
 
@@ -270,13 +226,10 @@ with gr.Blocks(title="AI Student Study Assistant") as app:
     )
 
     gr.Markdown("## Quiz")
-
-    # This box displays the actual error if quiz generation fails
     quiz_status = gr.Textbox(
         label="Quiz Error / Status",
         interactive=False
     )
-
     quiz_questions = gr.State([])
 
     q1 = gr.Radio(choices=[], label="Question 1", visible=False)
@@ -306,4 +259,7 @@ with gr.Blocks(title="AI Student Study Assistant") as app:
 
 
 if __name__ == "__main__":
-    app.launch()
+    app.launch(
+        server_name="0.0.0.0",
+        server_port=int(os.environ.get("PORT", 10000))
+    )
