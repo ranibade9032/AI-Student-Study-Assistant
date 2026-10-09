@@ -12,17 +12,17 @@ client = genai.Client(api_key=API_KEY) if API_KEY else None
 MODEL = "gemini-2.5-flash"
 
 
-def ask_gemini(prompt):
+def ask_ai(prompt):
     if client is None:
-        return "Error: GEMINI_API_KEY is missing. Set it in Render Environment Variables."
+        return "ERROR: GEMINI_API_KEY is not configured."
     try:
         response = client.models.generate_content(
             model=MODEL,
             contents=prompt
         )
-        return response.text or "No response received. Please try again."
+        return response.text or "No response received."
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"ERROR: {e}"
 
 
 def study_assistant(notes):
@@ -30,31 +30,34 @@ def study_assistant(notes):
         return "Please enter your study notes first.", ""
 
     prompt = f"""
-    You are a helpful student study assistant.
-    Explain using simple English.
+You are a friendly AI study tutor. Use simple English.
 
-    STUDY NOTES:
-    {notes}
+Create these sections from the student's notes:
 
-    Return:
-    SUMMARY:
-    Write a clear and easy-to-understand summary.
+## 📖 Simple Summary
+Explain the topic in easy words.
 
-    IMPORTANT POINTS:
-    Give the most important points as a bullet list.
-    """
-    answer = ask_gemini(prompt)
+## ⭐ Important Points
+List the key points as bullets.
 
-    if answer.startswith("Error:"):
-        return answer, ""
+## 💡 Quick Revision
+Give a few short revision tips.
 
-    if "IMPORTANT POINTS:" in answer:
-        parts = answer.split("IMPORTANT POINTS:", 1)
-        summary = parts[0].replace("SUMMARY:", "").strip()
-        points = parts[1].strip()
+STUDENT NOTES:
+{notes}
+"""
+    result = ask_ai(prompt)
+
+    if result.startswith("ERROR:"):
+        return result, ""
+
+    parts = result.split("## ⭐ Important Points", 1)
+    if len(parts) == 2:
+        summary = parts[0].strip()
+        points = "## ⭐ Important Points" + parts[1]
         return summary, points
 
-    return answer, "Review the key ideas from your summary."
+    return result, "Review the important ideas from your summary."
 
 
 def make_quiz(notes):
@@ -62,139 +65,207 @@ def make_quiz(notes):
         return [], "Please enter your study notes first."
 
     prompt = f"""
-    Create exactly 5 multiple-choice questions using ONLY these notes.
-    Return valid JSON, with no markdown fences.
-    Format:
-    [
-      {{
-        "question": "Question text",
-        "options": ["Option A", "Option B", "Option C", "Option D"],
-        "answer": "Option A",
-        "explanation": "Short explanation"
-      }}
-    ]
+Create 5 multiple-choice questions using the notes below.
+Return ONLY a valid JSON array without markdown fences.
 
-    Notes:
-    {notes}
-    """
+Format:
+[
+  {{
+    "question": "Question text",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "answer": "Exact correct option text",
+    "explanation": "Short explanation"
+  }}
+]
 
-    answer = ask_gemini(prompt)
-    if answer.startswith("Error:"):
-        return [], answer
+Ensure every answer exactly matches one of the four options.
+
+NOTES:
+{notes}
+"""
+    result = ask_ai(prompt)
+
+    if result.startswith("ERROR:"):
+        return [], result
 
     try:
-        start = answer.find("[")
-        end = answer.rfind("]") + 1
-        questions = json.loads(answer[start:end])
+        start = result.find("[")
+        end = result.rfind("]") + 1
+        if start < 0 or end <= start:
+            raise ValueError("No JSON array found")
 
-        if not isinstance(questions, list) or not questions:
-            return [], "Could not create a quiz. Please try again."
+        questions = json.loads(result[start:end])
 
-        for item in questions:
-            if not all(k in item for k in
+        if not isinstance(questions, list) or len(questions) < 1:
+            raise ValueError("No questions generated")
+
+        valid_questions = []
+        for q in questions[:5]:
+            if not all(k in q for k in
                        ("question", "options", "answer", "explanation")):
-                return [], "Quiz format was invalid. Please try again."
-            if len(item["options"]) != 4:
-                return [], "Quiz options were invalid. Please try again."
+                continue
+            if len(q["options"]) != 4:
+                continue
+            if q["answer"] not in q["options"]:
+                continue
+            valid_questions.append(q)
 
-        return questions[:5], f"{min(len(questions), 5)} questions ready!"
+        if not valid_questions:
+            raise ValueError("Invalid quiz format")
+
+        return valid_questions, (
+            f"✨ {len(valid_questions)} questions are ready! "
+            "Choose your answers below."
+        )
+
     except (ValueError, TypeError, json.JSONDecodeError):
-        return [], "Could not read the quiz. Please click Generate Quiz again."
+        return [], "Quiz generation failed. Please try again."
 
 
 def display_quiz(questions):
-    if not questions:
-        return (
-            gr.update(choices=[], value=None, visible=False),
-            gr.update(choices=[], value=None, visible=False),
-            gr.update(choices=[], value=None, visible=False),
-            gr.update(choices=[], value=None, visible=False),
-            gr.update(choices=[], value=None, visible=False),
-            gr.update(visible=False)
-        )
-
-    radios = []
+    updates = []
     for i in range(5):
-        if i < len(questions):
+        if questions and i < len(questions):
             q = questions[i]
-            radios.append(
+            updates.append(
                 gr.update(
-                    label=f"{i + 1}. {q['question']}",
+                    label=f"Q{i + 1}. {q['question']}",
                     choices=q["options"],
                     value=None,
                     visible=True
                 )
             )
         else:
-            radios.append(
+            updates.append(
                 gr.update(choices=[], value=None, visible=False)
             )
 
-    return (*radios, gr.update(visible=True))
+    return (*updates, gr.update(visible=bool(questions)))
 
 
 def grade_quiz(questions, a1, a2, a3, a4, a5):
     if not questions:
         return "Please generate a quiz first."
 
-    answers = [a1, a2, a3, a4, a5]
+    selected_answers = [a1, a2, a3, a4, a5]
     score = 0
     feedback = []
 
     for i, q in enumerate(questions):
-        selected = answers[i]
+        selected = selected_answers[i]
         correct = q["answer"]
 
         if selected == correct:
             score += 1
-            result = "✅ Correct"
+            status = "✅ Correct!"
         else:
-            result = f"❌ Correct answer: {correct}"
+            status = f"❌ Correct answer: {correct}"
 
         feedback.append(
-            f"**Q{i + 1}: {result}**\n\n"
+            f"### Question {i + 1}: {status}\n"
             f"{q['explanation']}"
         )
 
+    percentage = round(score / len(questions) * 100)
     return (
-        f"# 🎯 Your Score: {score}/{len(questions)}\n\n"
+        f"# 🏆 Your Result: {score}/{len(questions)}\n"
+        f"### 📊 Score: {percentage}%\n\n"
         + "\n\n---\n\n".join(feedback)
     )
 
 
-CUSTOM_CSS = """
+CSS = """
 .gradio-container {
-    background: linear-gradient(135deg, #0f172a, #312e81, #581c87) !important;
-    color: white !important;
+    background: linear-gradient(
+        135deg, #080b24, #24104f, #4c1d95, #172554
+    ) !important;
+    color: #ffffff !important;
 }
+
 .main-title {
     text-align: center;
-    padding: 28px 15px;
-    border-radius: 20px;
-    background: linear-gradient(100deg, #2563eb, #7c3aed, #c026d3);
-    color: white;
-    margin-bottom: 18px;
-    box-shadow: 0 8px 30px #00000040;
+    padding: 35px 20px;
+    border-radius: 24px;
+    background: linear-gradient(
+        110deg, #2563eb, #7c3aed, #db2777
+    );
+    color: #ffffff !important;
+    margin-bottom: 20px;
+    box-shadow: 0 12px 35px #7c3aed55;
 }
+
+.main-title h1,
+.main-title p {
+    color: #ffffff !important;
+}
+
 .main-title h1 {
-    color: white !important;
-    font-size: 32px !important;
+    font-size: 34px !important;
+    font-weight: 800 !important;
 }
+
 .subtitle {
     text-align: center;
-    color: #e0e7ff;
-    font-size: 16px;
-    margin-bottom: 22px;
+    color: #f3e8ff !important;
+    font-size: 17px;
+    margin-bottom: 24px;
 }
+
 .panel {
-    border: 1px solid #ffffff30 !important;
-    border-radius: 18px !important;
-    background: #ffffff12 !important;
-    padding: 18px !important;
+    background: #171d3b !important;
+    border: 1px solid #8b5cf6 !important;
+    border-radius: 20px !important;
+    padding: 22px !important;
+    margin-bottom: 18px !important;
+    box-shadow: 0 8px 26px #00000035;
 }
-button {
+
+.gradio-container h1,
+.gradio-container h2,
+.gradio-container h3,
+.gradio-container .prose,
+.gradio-container .prose p,
+.gradio-container .prose strong {
+    color: #ffffff !important;
+}
+
+.gradio-container label {
+    color: #f3e8ff !important;
+    font-weight: 700 !important;
+}
+
+.gradio-container textarea,
+.gradio-container input:not([type="radio"]):not([type="checkbox"]) {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border: 2px solid #a78bfa !important;
     border-radius: 12px !important;
-    font-weight: 600 !important;
+}
+
+.gradio-container textarea::placeholder {
+    color: #6b7280 !important;
+}
+
+.gradio-container button {
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+}
+
+.gradio-container button.primary {
+    background: linear-gradient(
+        90deg, #2563eb, #7c3aed, #c026d3
+    ) !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+.gradio-container input[type="radio"] {
+    accent-color: #a855f7;
+}
+
+.gradio-container .markdown,
+.gradio-container .prose {
+    color: #ffffff !important;
 }
 """
 
@@ -206,7 +277,7 @@ with gr.Blocks(
         secondary_hue="blue",
         neutral_hue="slate"
     ),
-    css=CUSTOM_CSS
+    css=CSS
 ) as app:
 
     gr.HTML("""
@@ -215,26 +286,35 @@ with gr.Blocks(
         <p>Learn smarter • Revise faster • Practice better</p>
     </div>
     <div class="subtitle">
-        Turn your study notes into simple summaries, key points, and quizzes.
+        Your personal AI tutor for notes, revision and practice.
     </div>
     """)
 
     with gr.Column(elem_classes=["panel"]):
+        gr.Markdown("## 📚 Start Learning")
+
         notes = gr.Textbox(
-            label="📚 Your Study Notes",
+            label="Your Study Notes",
             placeholder="Paste your class notes or study material here...",
             lines=10
         )
 
         with gr.Row():
-            summary_btn = gr.Button("✨ Generate Summary", variant="primary")
-            quiz_btn = gr.Button("🧠 Generate Quiz", variant="secondary")
+            summary_btn = gr.Button(
+                "✨ Generate Summary",
+                variant="primary"
+            )
+            quiz_btn = gr.Button(
+                "🧠 Generate Quiz",
+                variant="secondary"
+            )
+            clear_btn = gr.Button("🗑️ Clear")
 
     with gr.Column(elem_classes=["panel"]):
         gr.Markdown("## 📖 Study Summary")
         summary_output = gr.Markdown()
 
-        gr.Markdown("## ⭐ Important Points")
+        gr.Markdown("## ⭐ Important Points & Quick Revision")
         points_output = gr.Markdown()
 
     summary_btn.click(
@@ -246,17 +326,14 @@ with gr.Blocks(
     with gr.Column(elem_classes=["panel"]):
         gr.Markdown("## 📝 Knowledge Check")
 
-        quiz_status = gr.Textbox(
-            label="Quiz Status",
-            interactive=False
-        )
+        quiz_status = gr.Markdown()
         quiz_questions = gr.State([])
 
-        q1 = gr.Radio(choices=[], label="Question 1", visible=False)
-        q2 = gr.Radio(choices=[], label="Question 2", visible=False)
-        q3 = gr.Radio(choices=[], label="Question 3", visible=False)
-        q4 = gr.Radio(choices=[], label="Question 4", visible=False)
-        q5 = gr.Radio(choices=[], label="Question 5", visible=False)
+        q1 = gr.Radio(label="Question 1", choices=[], visible=False)
+        q2 = gr.Radio(label="Question 2", choices=[], visible=False)
+        q3 = gr.Radio(label="Question 3", choices=[], visible=False)
+        q4 = gr.Radio(label="Question 4", choices=[], visible=False)
+        q5 = gr.Radio(label="Question 5", choices=[], visible=False)
 
         submit_btn = gr.Button(
             "✅ Submit Quiz",
@@ -279,6 +356,24 @@ with gr.Blocks(
         fn=grade_quiz,
         inputs=[quiz_questions, q1, q2, q3, q4, q5],
         outputs=result
+    )
+
+    clear_btn.click(
+        fn=lambda: (
+            "", "", "", [], "",
+            gr.update(choices=[], value=None, visible=False),
+            gr.update(choices=[], value=None, visible=False),
+            gr.update(choices=[], value=None, visible=False),
+            gr.update(choices=[], value=None, visible=False),
+            gr.update(choices=[], value=None, visible=False),
+            gr.update(visible=False),
+            ""
+        ),
+        outputs=[
+            notes, summary_output, points_output,
+            quiz_questions, quiz_status,
+            q1, q2, q3, q4, q5, submit_btn, result
+        ]
     )
 
 
