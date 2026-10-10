@@ -1,258 +1,526 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Student Study Assistant</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Student Study Assistant</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f9ff;
-      color: #1e293b;
-      min-height: 100vh;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background: #eff6ff;
+  color: #172554;
+  min-height: 100vh;
+}
 
-    header {
-      background: #ffffff;
-      padding: 22px 8%;
-      border-bottom: 2px solid #bae6fd;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+header {
+  background: white;
+  padding: 20px 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #bfdbfe;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
-    header h2 {
-      color: #0369a1;
-    }
+header h2 {
+  color: #1d4ed8;
+}
 
-    .hero {
-      text-align: center;
-      padding: 55px 20px 30px;
-    }
+.hero {
+  text-align: center;
+  padding: 40px 15px 25px;
+}
 
-    .hero h1 {
-      color: #075985;
-      font-size: clamp(28px, 5vw, 42px);
-      margin-bottom: 15px;
-    }
+.hero h1 {
+  font-size: clamp(28px, 5vw, 40px);
+  color: #1d4ed8;
+  margin-bottom: 12px;
+}
 
-    .hero p {
-      color: #475569;
-      font-size: 17px;
-      line-height: 1.7;
-    }
+.hero p {
+  color: #475569;
+  line-height: 1.7;
+}
 
-    .container {
-      max-width: 850px;
-      margin: 20px auto 60px;
-      padding: 25px;
-      background: #ffffff;
-      border: 1px solid #bae6fd;
-      border-radius: 18px;
-      box-shadow: 0 8px 25px rgba(2, 132, 199, 0.10);
-    }
+.container {
+  max-width: 1000px;
+  margin: 20px auto 50px;
+  padding: 25px;
+  background: white;
+  border: 1px solid #bfdbfe;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px #1d4ed81a;
+}
 
-    label {
-      display: block;
-      color: #075985;
-      font-weight: bold;
-      margin: 18px 0 8px;
-    }
+.layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 22px;
+}
 
-    textarea, select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #7dd3fc;
-      border-radius: 10px;
-      background: #ffffff;
-      color: #1e293b;
-      font: inherit;
-      outline: none;
-    }
+.panel {
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 20px;
+  min-width: 0;
+}
 
-    textarea {
-      min-height: 180px;
-      resize: vertical;
-    }
+h2, h3 {
+  color: #1d4ed8;
+  margin-bottom: 14px;
+}
 
-    textarea:focus, select:focus {
-      border-color: #0284c7;
-      box-shadow: 0 0 0 3px #e0f2fe;
-    }
+label.field-label {
+  display: block;
+  font-weight: bold;
+  margin: 15px 0 8px;
+  color: #1e40af;
+}
 
-    .buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      margin-top: 20px;
-    }
+textarea, select {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #93c5fd;
+  border-radius: 9px;
+  background: white;
+  color: #172554;
+  font: inherit;
+}
 
-    button {
-      padding: 13px 16px;
-      background: #0284c7;
-      color: #ffffff;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+textarea {
+  min-height: 180px;
+  resize: vertical;
+}
 
-    button:hover {
-      background: #0369a1;
-    }
+button {
+  padding: 12px 15px;
+  border: 0;
+  border-radius: 9px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 7px 5px 0 0;
+}
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+button:hover {
+  background: #1d4ed8;
+}
 
-    .secondary {
-      background: #e0f2fe;
-      color: #075985;
-      border: 1px solid #7dd3fc;
-    }
+.secondary {
+  background: #dbeafe;
+  color: #1e40af;
+}
 
-    .secondary:hover {
-      background: #bae6fd;
-    }
+.secondary:hover {
+  background: #bfdbfe;
+}
 
-    .result {
-      margin-top: 25px;
-      padding: 20px;
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 12px;
-      min-height: 100px;
-      line-height: 1.8;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
+.result {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+  background: white;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 15px;
+  min-height: 70px;
+}
 
-    .result h3 {
-      color: #0369a1;
-      margin-bottom: 10px;
-    }
+.hint {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
 
-    .status {
-      margin-top: 15px;
-      color: #0369a1;
-      font-size: 14px;
-    }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px;
+  margin: 8px 0;
+  background: white;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: normal;
+  color: #172554;
+}
 
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #64748b;
-    }
-  </style>
+.option:hover {
+  background: #eff6ff;
+}
+
+.option input {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.status {
+  margin-top: 12px;
+  color: #1d4ed8;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #64748b;
+}
+
+@media (max-width: 700px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+    margin: 15px;
+    padding: 15px;
+  }
+
+  header {
+    padding: 18px;
+  }
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <h2>🎓 AI Study Assistant</h2>
-    <span>Learn Smarter 💙</span>
-  </header>
 
-  <section class="hero">
-    <h1>Your Personal AI Study Assistant</h1>
-    <p>
-      Understand your notes easily, find important points,<br>
-      and practise with quizzes.
-    </p>
+<header>
+  <h2>🎓 AI Study Assistant</h2>
+  <span>Learn Smarter 💙</span>
+</header>
+
+<section class="hero">
+  <h1>Your Personal AI Study Assistant</h1>
+  <p>
+    Understand your notes easily, find important points,<br>
+    and practise with quizzes.
+  </p>
+</section>
+
+<main class="container">
+
+  <div class="layout">
+
+    <section class="panel">
+      <h2>📘 Start Learning</h2>
+
+      <label class="field-label" for="topic">Study Topic</label>
+      <select id="topic">
+        <option value="summary">📝 Generate Summary</option>
+        <option value="important">⭐ Important Points</option>
+        <option value="quiz">❓ Generate Quiz</option>
+      </select>
+
+      <label class="field-label" for="notes">Paste Your Notes Here</label>
+      <textarea id="notes"
+        placeholder="Paste your study notes here..."></textarea>
+
+      <div id="quizSettings" hidden>
+        <label class="field-label" for="count">Quiz Questions</label>
+        <select id="count">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+        </select>
+      </div>
+
+      <button id="generateBtn" type="button">Generate</button>
+      <button id="clearBtn" class="secondary" type="button">
+        Clear All
+      </button>
+
+      <p id="status" class="status" role="status"></p>
+    </section>
+
+    <aside class="panel">
+      <h2>💡 How to Use</h2>
+
+      <p class="hint">1. Select a Study Topic.</p><br>
+      <p class="hint">2. Paste your study notes.</p><br>
+      <p class="hint">3. Click the Generate button.</p><br>
+      <p class="hint">4. Read the result or answer the quiz.</p><br>
+      <p class="hint">5. Use Clear All to start again.</p>
+
+      <h3 style="margin-top:25px">📊 Knowledge Check</h3>
+      <div id="score" class="result">
+        Your quiz score will appear here.
+      </div>
+    </aside>
+
+  </div>
+
+  <div class="layout" style="margin-top:22px">
+
+    <section class="panel">
+      <h3>📝 Simple Summary</h3>
+      <div id="summary" class="result">
+        Your summary will appear here.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>⭐ Important Points</h3>
+      <div id="points" class="result">
+        Important points will appear here.
+      </div>
+    </section>
+
+  </div>
+
+  <section class="panel" style="margin-top:22px">
+    <h3>🧠 Quiz Practice</h3>
+    <div id="quiz" class="result">
+      Select Generate Quiz to begin.
+    </div>
+    <div id="quizControls"></div>
   </section>
 
-  <main class="container">
-    <label for="topic">Study Topic</label>
-    <select id="topic">
-      <option value="summary">📝 Summarize Notes</option>
-      <option value="important">⭐ Important Points</option>
-      <option value="quiz">❓ Generate Quiz</option>
-    </select>
+</main>
 
-    <label for="notes">Paste Your Notes Here</label>
-    <textarea id="notes" placeholder="Paste your study notes here..."></textarea>
+<footer>Made with 💙 for students</footer>
 
-    <div class="buttons">
-      <button id="generateBtn" onclick="generateResult()">
-        Generate
-      </button>
-      <button class="secondary" onclick="clearAll()">
-        Clear
-      </button>
-    </div>
+<script>
+"use strict";
 
-    <div class="result" id="result">
-      <h3>Your Result</h3>
-      Your study result will appear here.
-    </div>
+const $ = id => document.getElementById(id);
 
-    <p class="status" id="status"></p>
-  </main>
+let questions = [];
+let current = 0;
+let correct = 0;
+let answered = false;
 
-  <footer>
-    Made with 💙 for students
-  </footer>
+function showStatus(message) {
+  $("status").textContent = message;
+}
 
-  <script>
-    async function generateResult() {
-      const notes = document.getElementById("notes").value.trim();
-      const topic = document.getElementById("topic").value;
-      const result = document.getElementById("result");
-      const status = document.getElementById("status");
-      const button = document.getElementById("generateBtn");
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[character]));
+}
 
-      if (!notes) {
-        status.textContent = "Please paste your study notes first.";
-        return;
-      }
+function sentences(notes) {
+  return notes
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map(sentence => sentence.trim())
+    .filter(Boolean);
+}
 
-      result.textContent = "";
-      status.textContent =
-        "This HTML page needs a backend AI service to generate results.";
-      button.disabled = true;
+function makeSummary(notes) {
+  const parts = sentences(notes);
 
-      try {
-        const response = await fetch("/api/study", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ notes, topic })
-        });
+  if (parts.length === 0) {
+    return notes;
+  }
 
-        if (!response.ok) {
-          throw new Error("AI backend is not connected to this website yet.");
-        }
+  return parts.slice(0, 5).join(" ");
+}
 
-        const data = await response.json();
-        result.textContent = data.result || "No result returned.";
-        status.textContent = "Completed successfully!";
-      } catch (error) {
-        status.textContent =
-          "The design works, but AI generation needs a connected backend. " +
-          "Your Python Gradio app currently runs separately.";
-      } finally {
-        button.disabled = false;
-      }
-    }
+function makePoints(notes) {
+  const parts = sentences(notes);
 
-    function clearAll() {
-      document.getElementById("notes").value = "";
-      document.getElementById("result").textContent =
-        "Your study result will appear here.";
-      document.getElementById("status").textContent = "";
-      document.getElementById("topic").selectedIndex = 0;
-    }
-  </script>
+  if (parts.length === 0) {
+    return notes;
+  }
+
+  return parts
+    .slice(0, 10)
+    .map((sentence, index) => `${index + 1}. ${sentence}`)
+    .join("\n");
+}
+
+function generate() {
+  const notes = $("notes").value.trim();
+  const topic = $("topic").value;
+
+  if (!notes) {
+    showStatus("Please paste your study notes first.");
+    return;
+  }
+
+  if (topic === "summary") {
+    $("summary").textContent = makeSummary(notes);
+    showStatus("Summary generated from your notes.");
+  } else if (topic === "important") {
+    $("points").textContent = makePoints(notes);
+    showStatus("Important points extracted.");
+  } else {
+    makeQuiz(notes, Number($("count").value));
+  }
+}
+
+function makeQuiz(notes, count) {
+  const lines = sentences(notes).filter(
+    sentence => sentence.length > 25
+  );
+
+  if (lines.length < 2) {
+    showStatus(
+      "Quiz kosam at least 2 detailed sentences paste cheyyi."
+    );
+    return;
+  }
+
+  questions = [];
+
+  // This is a basic practice quiz using sentences from your notes.
+  // It does not generate AI-written questions.
+  const total = Math.min(count, lines.length);
+
+  for (let i = 0; i < total; i++) {
+    const correctText = lines[i];
+
+    const distractors = lines
+      .filter((_, index) => index !== i)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+
+    const options = [correctText, ...distractors]
+      .sort(() => Math.random() - 0.5);
+
+    questions.push({
+      q: "Which statement appears in your notes?",
+      options: options,
+      answer: options.indexOf(correctText)
+    });
+  }
+
+  current = 0;
+  correct = 0;
+  answered = false;
+
+  $("score").textContent = `Score: 0 / ${questions.length}`;
+
+  showQuestion();
+  showStatus("Quiz ready! Select an answer.");
+}
+
+function showQuestion() {
+  if (current >= questions.length) {
+    $("quiz").textContent =
+      `Quiz completed! Final Score: ${correct} / ${questions.length}`;
+
+    $("quizControls").innerHTML =
+      '<button type="button" id="retryBtn">Try Again</button>';
+
+    $("retryBtn").addEventListener("click", generate);
+
+    $("score").textContent =
+      `Final Score: ${correct} / ${questions.length}`;
+
+    return;
+  }
+
+  const question = questions[current];
+
+  $("quiz").innerHTML =
+    `<b>Question ${current + 1} of ${questions.length}</b>` +
+    `<p style="margin-top:12px">${escapeHTML(question.q)}</p>` +
+    question.options.map((option, index) =>
+      `<label class="option">
+        <input type="radio" name="answer" value="${index}">
+        <span>${escapeHTML(option)}</span>
+      </label>`
+    ).join("");
+
+  $("quizControls").innerHTML =
+    '<button type="button" id="checkBtn">Check Answer</button>';
+
+  $("checkBtn").addEventListener("click", checkAnswer);
+
+  answered = false;
+}
+
+function checkAnswer() {
+  if (answered) {
+    showStatus("Click Next Question to continue.");
+    return;
+  }
+
+  const selected = document.querySelector(
+    'input[name="answer"]:checked'
+  );
+
+  if (!selected) {
+    showStatus("Please select an option.");
+    return;
+  }
+
+  answered = true;
+
+  const question = questions[current];
+  const picked = Number(selected.value);
+
+  if (picked === question.answer) {
+    correct++;
+    showStatus("Correct answer!");
+  } else {
+    showStatus(
+      "Correct answer: " + question.options[question.answer]
+    );
+  }
+
+  $("score").textContent =
+    `Score: ${correct} / ${questions.length}`;
+
+  $("quizControls").innerHTML +=
+    '<button type="button" class="secondary" id="nextBtn">' +
+    'Next Question</button>';
+
+  $("nextBtn").addEventListener("click", nextQuestion);
+}
+
+function nextQuestion() {
+  current++;
+  showQuestion();
+}
+
+function clearAll() {
+  $("notes").value = "";
+
+  $("summary").textContent = "Your summary will appear here.";
+  $("points").textContent = "Important points will appear here.";
+  $("quiz").textContent = "Select Generate Quiz to begin.";
+  $("quizControls").innerHTML = "";
+  $("score").textContent = "Your quiz score will appear here.";
+
+  $("topic").value = "summary";
+  $("quizSettings").hidden = true;
+
+  questions = [];
+  current = 0;
+  correct = 0;
+  answered = false;
+
+  showStatus("");
+}
+
+$("topic").addEventListener("change", () => {
+  $("quizSettings").hidden = $("topic").value !== "quiz";
+});
+
+$("generateBtn").addEventListener("click", generate);
+$("clearBtn").addEventListener("click", clearAll);
+</script>
+
 </body>
 </html>
-```
