@@ -1,108 +1,258 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Student Study Assistant</title>
+
   <style>
-    * { box-sizing: border-box; }
-    body {
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #10152f, #24245a, #49328a);
-      color: white;
+      background: #f0f9ff;
+      color: #1e293b;
       min-height: 100vh;
     }
+
     header {
-      padding: 24px 8%;
-      border-bottom: 1px solid #ffffff25;
-      font-size: 20px;
-      font-weight: bold;
+      background: #ffffff;
+      padding: 22px 8%;
+      border-bottom: 2px solid #bae6fd;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    main {
-      max-width: 950px;
-      margin: 65px auto;
-      padding: 20px;
+
+    header h2 {
+      color: #0369a1;
+    }
+
+    .hero {
       text-align: center;
+      padding: 55px 20px 30px;
     }
-    h1 { font-size: clamp(32px, 6vw, 52px); margin-bottom: 16px; }
-    .intro { color: #d5d9f5; line-height: 1.7; }
-    .panel {
-      margin: 32px auto;
-      padding: 28px;
-      max-width: 680px;
-      background: #ffffff12;
-      border: 1px solid #ffffff25;
-      border-radius: 20px;
+
+    .hero h1 {
+      color: #075985;
+      font-size: clamp(28px, 5vw, 42px);
+      margin-bottom: 15px;
     }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      margin-top: 25px;
+
+    .hero p {
+      color: #475569;
+      font-size: 17px;
+      line-height: 1.7;
     }
-    .feature {
-      padding: 20px;
-      background: #ffffff0d;
-      border: 1px solid #ffffff20;
-      border-radius: 14px;
+
+    .container {
+      max-width: 850px;
+      margin: 20px auto 60px;
+      padding: 25px;
+      background: #ffffff;
+      border: 1px solid #bae6fd;
+      border-radius: 18px;
+      box-shadow: 0 8px 25px rgba(2, 132, 199, 0.10);
     }
-    .feature h3 { color: #c4b5fd; }
-    a.button {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 14px 24px;
-      background: #8b5cf6;
-      color: white;
-      text-decoration: none;
+
+    label {
+      display: block;
+      color: #075985;
       font-weight: bold;
-      border-radius: 10px;
+      margin: 18px 0 8px;
     }
-    a.button:hover { background: #7041d8; }
-    footer { text-align: center; padding: 30px; color: #c4c9e6; }
+
+    textarea, select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #7dd3fc;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #1e293b;
+      font: inherit;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+    }
+
+    textarea:focus, select:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px #e0f2fe;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 13px 16px;
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #0369a1;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .secondary {
+      background: #e0f2fe;
+      color: #075985;
+      border: 1px solid #7dd3fc;
+    }
+
+    .secondary:hover {
+      background: #bae6fd;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      min-height: 100px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .result h3 {
+      color: #0369a1;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      margin-top: 15px;
+      color: #0369a1;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #64748b;
+    }
   </style>
 </head>
+
 <body>
-  <header>📚 AI Student Study Assistant</header>
-  <main>
-    <h1>Learn Smarter with AI</h1>
-    <p class="intro">
-      Your AI-powered study companion. Understand your notes,
-      revise important topics, and test your knowledge easily.
+  <header>
+    <h2>🎓 AI Study Assistant</h2>
+    <span>Learn Smarter 💙</span>
+  </header>
+
+  <section class="hero">
+    <h1>Your Personal AI Study Assistant</h1>
+    <p>
+      Understand your notes easily, find important points,<br>
+      and practise with quizzes.
     </p>
+  </section>
 
-    <section class="panel">
-      <h2>Your Personal AI Tutor</h2>
-      <p>Summarize notes, discover key points, and practice with quizzes.</p>
-      <a class="button"
-         href="https://ai-student-study-assistant-unki.onrender.com"
-         target="_blank" rel="noopener">
-        🚀 Open AI Study Assistant
-      </a>
-    </section>
+  <main class="container">
+    <label for="topic">Study Topic</label>
+    <select id="topic">
+      <option value="summary">📝 Summarize Notes</option>
+      <option value="important">⭐ Important Points</option>
+      <option value="quiz">❓ Generate Quiz</option>
+    </select>
 
-    <h2>Features</h2>
-    <section class="features">
-      <div class="feature">
-        <h3>📝 Smart Summaries</h3>
-        <p>Turn long study notes into simple summaries.</p>
-      </div>
-      <div class="feature">
-        <h3>💡 Important Points</h3>
-        <p>Find key ideas for quick revision.</p>
-      </div>
-      <div class="feature">
-        <h3>❓ Practice Quiz</h3>
-        <p>Test your knowledge with multiple-choice questions.</p>
-      </div>
-      <div class="feature">
-        <h3>🤖 AI Tutor</h3>
-        <p>Ask questions and learn step by step.</p>
-      </div>
-    </section>
+    <label for="notes">Paste Your Notes Here</label>
+    <textarea id="notes" placeholder="Paste your study notes here..."></textarea>
+
+    <div class="buttons">
+      <button id="generateBtn" onclick="generateResult()">
+        Generate
+      </button>
+      <button class="secondary" onclick="clearAll()">
+        Clear
+      </button>
+    </div>
+
+    <div class="result" id="result">
+      <h3>Your Result</h3>
+      Your study result will appear here.
+    </div>
+
+    <p class="status" id="status"></p>
   </main>
-  <footer>Built with Python, Gradio and Google Gemini API</footer>
+
+  <footer>
+    Made with 💙 for students
+  </footer>
+
+  <script>
+    async function generateResult() {
+      const notes = document.getElementById("notes").value.trim();
+      const topic = document.getElementById("topic").value;
+      const result = document.getElementById("result");
+      const status = document.getElementById("status");
+      const button = document.getElementById("generateBtn");
+
+      if (!notes) {
+        status.textContent = "Please paste your study notes first.";
+        return;
+      }
+
+      result.textContent = "";
+      status.textContent =
+        "This HTML page needs a backend AI service to generate results.";
+      button.disabled = true;
+
+      try {
+        const response = await fetch("/api/study", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ notes, topic })
+        });
+
+        if (!response.ok) {
+          throw new Error("AI backend is not connected to this website yet.");
+        }
+
+        const data = await response.json();
+        result.textContent = data.result || "No result returned.";
+        status.textContent = "Completed successfully!";
+      } catch (error) {
+        status.textContent =
+          "The design works, but AI generation needs a connected backend. " +
+          "Your Python Gradio app currently runs separately.";
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function clearAll() {
+      document.getElementById("notes").value = "";
+      document.getElementById("result").textContent =
+        "Your study result will appear here.";
+      document.getElementById("status").textContent = "";
+      document.getElementById("topic").selectedIndex = 0;
+    }
+  </script>
 </body>
 </html>
 ```
