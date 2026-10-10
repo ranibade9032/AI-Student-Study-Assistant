@@ -4,29 +4,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Student Study Assistant</title>
+<title>StudyFlow | AI Study Assistant</title>
 
 <style>
 :root {
-  --bg: #eff6ff;
+  --primary: #3563f5;
+  --primary-dark: #244bd1;
+  --bg: #f4f7ff;
   --card: #ffffff;
-  --panel: #f8fbff;
-  --text: #172554;
-  --muted: #64748b;
-  --primary: #2563eb;
-  --border: #bfdbfe;
-  --soft: #dbeafe;
-}
-
-body.dark {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --panel: #172033;
-  --text: #e2e8f0;
-  --muted: #a5b4c7;
-  --primary: #60a5fa;
-  --border: #334155;
-  --soft: #263750;
+  --text: #172344;
+  --muted: #73809b;
+  --border: #e3eaff;
+  --soft: #edf2ff;
+  --shadow: 0 12px 35px rgba(47, 83, 180, .08);
 }
 
 * {
@@ -35,31 +25,15 @@ body.dark {
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
-  transition: background .2s, color .2s;
-}
-
-header {
-  background: var(--card);
-  padding: 18px 7%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--border);
-}
-
-header h2, h2, h3 {
-  color: var(--primary);
-}
-
-header h2 {
-  font-size: 22px;
+  line-height: 1.6;
 }
 
 button, select, textarea {
@@ -67,197 +41,689 @@ button, select, textarea {
 }
 
 button {
-  border: 0;
-  border-radius: 9px;
-  padding: 11px 15px;
-  background: var(--primary);
-  color: white;
-  font-weight: 600;
   cursor: pointer;
-  margin: 5px 5px 0 0;
+  transition: transform .2s, background .2s, box-shadow .2s;
 }
 
 button:hover {
-  opacity: .88;
+  transform: translateY(-2px);
 }
 
-.secondary {
-  background: var(--soft);
+button:focus-visible, select:focus-visible,
+textarea:focus-visible, a:focus-visible {
+  outline: 3px solid #93b4ff;
+  outline-offset: 3px;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255,255,255,.93);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: auto;
+  padding: 15px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-weight: 800;
+  font-size: 20px;
   color: var(--text);
+  text-decoration: none;
 }
 
-.theme-btn {
-  margin: 0;
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  color: white;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4d7bff, #5c48df);
+  box-shadow: 0 6px 16px #3563f544;
+}
+
+.brand small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.theme-button {
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  border-radius: 12px;
+  padding: 9px 13px;
 }
 
 .hero {
-  text-align: center;
-  padding: 40px 16px 24px;
+  max-width: 1200px;
+  margin: auto;
+  padding: 48px 24px 28px;
+  display: grid;
+  grid-template-columns: 1.4fr .8fr;
+  align-items: center;
+  gap: 30px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  background: #e8efff;
+  border: 1px solid #d8e4ff;
+  border-radius: 30px;
+  padding: 7px 13px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  margin-bottom: 18px;
 }
 
 .hero h1 {
+  max-width: 650px;
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -1.8px;
+  margin-bottom: 17px;
+}
+
+.hero h1 span {
   color: var(--primary);
-  font-size: clamp(28px, 5vw, 40px);
-  margin-bottom: 12px;
 }
 
 .hero p {
   color: var(--muted);
-  line-height: 1.7;
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.8;
 }
 
-.container {
-  max-width: 1050px;
-  margin: 20px auto 40px;
-  padding: 24px;
+.hero-art {
+  position: relative;
+  min-height: 230px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #dce8ff, #e9e4ff 60%, #f3f7ff);
+  display: grid;
+  place-items: center;
+}
+
+.orb {
+  width: 135px;
+  height: 135px;
+  border-radius: 35px;
+  background: linear-gradient(135deg, #5d85ff, #6d50df);
+  display: grid;
+  place-items: center;
+  font-size: 58px;
+  transform: rotate(-8deg);
+  box-shadow: 0 22px 45px #4c63cb44;
+  animation: float 4s ease-in-out infinite;
+}
+
+.float-card {
+  position: absolute;
+  background: white;
+  border: 1px solid #e3eaff;
+  border-radius: 13px;
+  padding: 11px 14px;
+  box-shadow: var(--shadow);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.float-one {
+  left: 7%;
+  top: 20%;
+}
+
+.float-two {
+  right: 6%;
+  bottom: 19%;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-9px) rotate(-5deg); }
+}
+
+.page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 24px 55px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 15px;
+  margin: 18px 0 20px;
+}
+
+.section-heading h2 {
+  font-size: 23px;
+  letter-spacing: -.5px;
+}
+
+.section-heading p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.pill {
+  color: #28734d;
+  background: #e3f8ed;
+  padding: 6px 11px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 35px;
+}
+
+.stat-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 18px;
-  box-shadow: 0 8px 28px #2563eb12;
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 20px;
-}
-
-.panel {
-  min-width: 0;
-  padding: 20px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-}
-
-h2, h3 {
-  margin-bottom: 14px;
-}
-
-label.field-label {
-  display: block;
-  font-weight: bold;
-  margin: 15px 0 8px;
-}
-
-textarea, select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--card);
-  color: var(--text);
-}
-
-textarea {
-  min-height: 175px;
-  resize: vertical;
-  line-height: 1.6;
-}
-
-textarea:focus, select:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 1px;
-}
-
-.stats {
+  padding: 21px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+  align-items: center;
+  gap: 15px;
+  box-shadow: var(--shadow);
+}
+
+.stat-icon {
+  width: 49px;
+  height: 49px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  flex-shrink: 0;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 23px;
+  line-height: 1.3;
+}
+
+.stat-card small {
   color: var(--muted);
   font-size: 13px;
 }
 
-.result {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  line-height: 1.7;
-  min-height: 75px;
-  padding: 14px;
-  margin-top: 12px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+.workspace {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 22px;
+  align-items: start;
 }
 
-.hint {
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 23px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.card-header h3 {
+  font-size: 18px;
+}
+
+.card-header p {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.card-symbol {
+  width: 43px;
+  height: 43px;
+  border-radius: 13px;
+  background: var(--soft);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.field-label {
+  display: block;
+  margin: 16px 0 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+select, textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfcff;
+  color: var(--text);
+  padding: 13px 14px;
+}
+
+select {
+  min-height: 47px;
+}
+
+textarea {
+  min-height: 205px;
+  resize: vertical;
   line-height: 1.7;
+}
+
+textarea::placeholder {
+  color: #a0abc1;
+}
+
+.note-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.btn-primary, .btn-secondary, .btn-quiet {
+  border-radius: 11px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.btn-primary {
+  color: white;
+  background: linear-gradient(135deg, #4775ff, #3657e8);
+  box-shadow: 0 7px 17px #3563f52e;
+}
+
+.btn-secondary {
+  color: var(--primary);
+  background: #edf2ff;
+  border: 1px solid #dfe8ff;
+}
+
+.btn-quiet {
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
 }
 
 .status {
-  color: var(--primary);
+  min-height: 23px;
   margin-top: 12px;
-  line-height: 1.5;
+  color: var(--primary);
+  font-size: 13px;
   overflow-wrap: anywhere;
 }
 
-.option {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 11px;
-  margin: 8px 0;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  cursor: pointer;
-  line-height: 1.5;
+.tips-list {
+  display: grid;
+  gap: 16px;
 }
 
-.option input {
+.tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tip-number {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 31px;
+  height: 31px;
+  border-radius: 10px;
+  background: var(--soft);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.tip strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.tip p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.feature-strip {
+  margin-top: 19px;
+  background: linear-gradient(135deg, #edf3ff, #f5f0ff);
+  border-radius: 15px;
+  padding: 17px;
+}
+
+.feature-strip strong {
+  font-size: 13px;
+}
+
+.feature-strip p {
+  color: #687795;
+  font-size: 12px;
   margin-top: 4px;
 }
 
-.progress-track {
-  width: 100%;
-  height: 10px;
+.outputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-top: 24px;
+}
+
+.output-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.output-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.output-top h3 {
+  font-size: 16px;
+}
+
+.output-content {
+  background: var(--panel, #fbfcff);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 16px;
+  min-height: 125px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.output-actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 11px;
+}
+
+.output-actions button {
+  padding: 9px 12px;
+  font-size: 12px;
+}
+
+.quiz-section {
+  margin-top: 24px;
+}
+
+.quiz-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.quiz-top h3 {
+  font-size: 19px;
+}
+
+.quiz-progress {
+  height: 8px;
   background: var(--soft);
   border-radius: 99px;
   overflow: hidden;
-  margin: 12px 0;
+  margin: 12px 0 20px;
 }
 
-.progress-fill {
-  height: 100%;
+.quiz-progress-fill {
   width: 0;
-  background: var(--primary);
-  border-radius: 99px;
-  transition: width .25s;
+  height: 100%;
+  background: linear-gradient(90deg, #4775ff, #8365ee);
+  transition: width .3s;
 }
 
-.result-actions {
-  margin-top: 8px;
+.quiz-content {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.quiz-question {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fbfcff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 9px 0;
+  cursor: pointer;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.quiz-option input {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.quiz-option:hover {
+  border-color: #a8bdff;
+  background: #f1f5ff;
+}
+
+.quiz-result {
+  margin-top: 13px;
+  font-weight: 700;
+  font-size: 13px;
 }
 
 footer {
   text-align: center;
+  padding: 25px 18px;
   color: var(--muted);
-  padding: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+
+footer strong {
+  color: var(--primary);
 }
 
 [hidden] {
   display: none !important;
 }
 
-@media(max-width: 700px) {
-  .layout {
+body.dark {
+  --bg: #0e1528;
+  --card: #172239;
+  --text: #e8eeff;
+  --muted: #a0aec9;
+  --border: #2b3955;
+  --soft: #243452;
+  --shadow: 0 12px 35px rgba(0,0,0,.12);
+}
+
+body.dark .navbar {
+  background: rgba(23,34,57,.94);
+}
+
+body.dark .theme-button,
+body.dark select,
+body.dark textarea,
+body.dark .quiz-option,
+body.dark .output-content {
+  background: #111c31;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+body.dark .hero-art {
+  background: linear-gradient(135deg, #25375e, #302a58);
+}
+
+body.dark .float-card {
+  background: #172239;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+body.dark .eyebrow,
+body.dark .feature-strip {
+  background: #243452;
+  border-color: var(--border);
+}
+
+body.dark .feature-strip p {
+  color: var(--muted);
+}
+
+body.dark .btn-secondary {
+  background: #243452;
+  border-color: var(--border);
+}
+
+@media(max-width: 820px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 34px;
+  }
+
+  .hero-art {
+    min-height: 190px;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width: 600px) {
+  .nav-inner {
+    padding: 13px 16px;
+  }
+
+  .brand {
+    font-size: 17px;
+  }
+
+  .nav-link {
+    display: none;
+  }
+
+  .hero, .page {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero h1 {
+    letter-spacing: -1px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .outputs {
     grid-template-columns: 1fr;
   }
 
-  .container {
-    margin: 14px;
-    padding: 14px;
+  .card, .output-card {
+    padding: 17px;
   }
 
-  header {
-    padding: 16px;
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  .panel {
-    padding: 16px;
+  .actions button {
+    flex: 1;
   }
 }
 </style>
@@ -265,133 +731,237 @@ footer {
 
 <body>
 
-<header>
-  <h2>🎓 AI Study Assistant</h2>
-  <div>
-    <span>Learn Smarter 💙</span>
-    <button id="themeBtn" class="theme-btn secondary"
-      type="button" aria-label="Toggle color theme">
-      🌙 Dark Mode
-    </button>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="#" class="brand">
+      <span class="brand-icon">🎓</span>
+      <span>StudyFlow<small>AI Study Assistant</small></span>
+    </a>
+
+    <div class="nav-right">
+      <a class="nav-link" href="#workspace">Workspace</a>
+      <a class="nav-link" href="#results">My Notes</a>
+      <a class="nav-link" href="#quizSection">Quiz</a>
+      <button class="theme-button" id="themeBtn" type="button">
+        🌙 Theme
+      </button>
+    </div>
   </div>
-</header>
+</nav>
 
 <section class="hero">
-  <h1>Your Personal AI Study Assistant</h1>
-  <p>Understand your notes, find important points,<br>
-    and practise with quizzes.</p>
+  <div>
+    <span class="eyebrow">✦ YOUR PERSONAL STUDY SPACE</span>
+    <h1>Study smarter.<br><span>Learn better.</span></h1>
+    <p>
+      Turn your study notes into simple summaries, key points,
+      and practice quizzes — all in one place.
+    </p>
+  </div>
+
+  <div class="hero-art" aria-label="Study assistant illustration">
+    <div class="float-card float-one">✨ Smart learning</div>
+    <div class="orb">📚</div>
+    <div class="float-card float-two">🧠 Keep learning</div>
+  </div>
 </section>
 
-<main class="container">
+<main class="page">
 
-  <div class="layout">
+  <div class="section-heading">
+    <div>
+      <h2>Your learning dashboard</h2>
+      <p>Everything you need to study, organized in one space.</p>
+    </div>
+    <span class="pill">● Ready to learn</span>
+  </div>
 
-    <section class="panel">
-      <h2>📘 Start Learning</h2>
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e7efff">📝</div>
+      <div>
+        <strong id="statWords">0</strong>
+        <small>Words in your notes</small>
+      </div>
+    </div>
 
-      <label class="field-label" for="topic">Study Topic</label>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e4f9ef">⭐</div>
+      <div>
+        <strong id="statPoints">0</strong>
+        <small>Important points</small>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f0eaff">🎯</div>
+      <div>
+        <strong id="statScore">—</strong>
+        <small>Latest quiz score</small>
+      </div>
+    </div>
+  </section>
+
+  <div class="workspace" id="workspace">
+
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h3>📘 Study workspace</h3>
+          <p>Start with your notes below.</p>
+        </div>
+        <span class="card-symbol">✍️</span>
+      </div>
+
+      <label class="field-label" for="topic">What would you like to do?</label>
       <select id="topic">
-        <option value="summary">📝 Generate Summary</option>
-        <option value="important">⭐ Important Points</option>
-        <option value="quiz">❓ Generate Quiz</option>
+        <option value="summary">📝 Create a simple summary</option>
+        <option value="important">⭐ Find important points</option>
+        <option value="quiz">🧠 Practise with a quiz</option>
       </select>
 
-      <label class="field-label" for="notes">
-        Paste Your Notes Here
-      </label>
+      <label class="field-label" for="notes">Your study notes</label>
       <textarea id="notes"
-        placeholder="Paste your study notes here..."></textarea>
+        placeholder="Paste your class notes, textbook content, or study material here..."></textarea>
 
-      <div class="stats">
-        <span id="wordCount">Words: 0</span>
-        <span id="charCount">Characters: 0</span>
+      <div class="note-meta">
+        <span id="wordCount">0 words</span>
+        <span id="charCount">0 characters</span>
       </div>
 
       <div id="quizSettings" hidden>
-        <label class="field-label" for="count">Quiz Questions</label>
+        <label class="field-label" for="count">Number of questions</label>
         <select id="count">
-          <option value="5">5 Questions</option>
-          <option value="10">10 Questions</option>
-          <option value="15">15 Questions</option>
+          <option value="5">5 questions</option>
+          <option value="10">10 questions</option>
+          <option value="15">15 questions</option>
         </select>
       </div>
 
-      <button id="generateBtn" type="button">✨ Generate</button>
-      <button id="clearBtn" class="secondary" type="button">
-        Clear All
-      </button>
-
-      <p id="status" class="status" role="status"></p>
-    </section>
-
-    <aside class="panel">
-      <h2>💡 How to Use</h2>
-      <p class="hint">1. Select a study topic.</p>
-      <p class="hint">2. Paste your notes.</p>
-      <p class="hint">3. Click Generate.</p>
-      <p class="hint">4. Read the result or answer the quiz.</p>
-      <p class="hint">5. Copy or download your summary.</p>
-
-      <h3 style="margin-top:24px">📊 Knowledge Check</h3>
-      <div id="score" class="result">
-        Your quiz score will appear here.
+      <div class="actions">
+        <button class="btn-primary" id="generateBtn" type="button">
+          ✨ Generate
+        </button>
+        <button class="btn-secondary" id="clearBtn" type="button">
+          ↻ Clear notes
+        </button>
       </div>
 
-      <p id="progressLabel" class="hint" style="margin-top:12px">
-        Quiz progress: 0%
-      </p>
-      <div class="progress-track" role="progressbar"
-        aria-label="Quiz progress" aria-valuemin="0"
-        aria-valuemax="100" aria-valuenow="0" id="progressTrack">
-        <div id="progressFill" class="progress-fill"></div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <aside class="card">
+      <div class="card-header">
+        <div>
+          <h3>💡 How it works</h3>
+          <p>Three simple steps to get started.</p>
+        </div>
+        <span class="card-symbol">🚀</span>
+      </div>
+
+      <div class="tips-list">
+        <div class="tip">
+          <span class="tip-number">01</span>
+          <div>
+            <strong>Add your notes</strong>
+            <p>Paste the material you want to study.</p>
+          </div>
+        </div>
+
+        <div class="tip">
+          <span class="tip-number">02</span>
+          <div>
+            <strong>Choose a study tool</strong>
+            <p>Make a summary, find key points, or practise a quiz.</p>
+          </div>
+        </div>
+
+        <div class="tip">
+          <span class="tip-number">03</span>
+          <div>
+            <strong>Review and practise</strong>
+            <p>Read your results, copy them, or download them.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-strip">
+        <strong>💙 Your study space, your progress</strong>
+        <p>Keep your material organized and practise at your own pace.</p>
       </div>
     </aside>
 
   </div>
 
-  <div class="layout" style="margin-top:20px">
-
-    <section class="panel">
-      <h3>📝 Simple Summary</h3>
-      <div id="summary" class="result">
-        Your summary will appear here.
+  <section id="results">
+    <div class="section-heading">
+      <div>
+        <h2>Your study results</h2>
+        <p>Review and save your generated content.</p>
       </div>
-      <div class="result-actions">
-        <button id="copyBtn" class="secondary" type="button">
-          📋 Copy Summary
-        </button>
-        <button id="downloadBtn" class="secondary" type="button">
-          📥 Download Summary
-        </button>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h3>⭐ Important Points</h3>
-      <div id="points" class="result">
-        Important points will appear here.
-      </div>
-      <button id="copyPointsBtn" class="secondary" type="button">
-        📋 Copy Points
-      </button>
-      <button id="downloadPointsBtn" class="secondary" type="button">
-        📥 Download Points
-      </button>
-    </section>
-
-  </div>
-
-  <section class="panel" style="margin-top:20px">
-    <h3>🧠 Quiz Practice</h3>
-    <div id="quiz" class="result">
-      Select Generate Quiz to begin.
     </div>
-    <div id="quizControls"></div>
+
+    <div class="outputs">
+      <section class="output-card">
+        <div class="output-top">
+          <h3>📝 Simple summary</h3>
+          <span class="card-symbol">📄</span>
+        </div>
+
+        <div class="output-content" id="summary">Your summary will appear here after you generate it.</div>
+
+        <div class="output-actions">
+          <button class="btn-secondary" id="copySummary" type="button">📋 Copy</button>
+          <button class="btn-secondary" id="downloadSummary" type="button">⬇ Download</button>
+        </div>
+      </section>
+
+      <section class="output-card">
+        <div class="output-top">
+          <h3>⭐ Important points</h3>
+          <span class="card-symbol">💡</span>
+        </div>
+
+        <div class="output-content" id="points">Your important points will appear here after you generate them.</div>
+
+        <div class="output-actions">
+          <button class="btn-secondary" id="copyPoints" type="button">📋 Copy</button>
+          <button class="btn-secondary" id="downloadPoints" type="button">⬇ Download</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="card quiz-section" id="quizSection">
+    <div class="quiz-top">
+      <div>
+        <h3>🧠 Knowledge check</h3>
+        <p style="color:var(--muted);font-size:13px">
+          Test what you remember from your notes.
+        </p>
+      </div>
+      <span class="pill" id="quizBadge">Not started</span>
+    </div>
+
+    <div class="quiz-progress" role="progressbar"
+      id="progressTrack" aria-label="Quiz progress"
+      aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="quiz-progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="quiz-content" id="quiz">
+      Select the quiz option above and click Generate to begin.
+    </div>
+
+    <div class="quiz-result" id="quizFeedback" role="status"></div>
+    <div class="actions" id="quizControls"></div>
   </section>
 
 </main>
 
-<footer>Made with 💙 for students</footer>
+<footer>
+  Made with 💙 for students · <strong>StudyFlow</strong>
+</footer>
 
 <script>
 "use strict";
@@ -402,85 +972,108 @@ let questions = [];
 let current = 0;
 let correct = 0;
 let answered = false;
+let quizStarted = false;
+
+const defaultSummary = "Your summary will appear here after you generate it.";
+const defaultPoints = "Your important points will appear here after you generate them.";
 
 function showStatus(message) {
   $("status").textContent = message;
 }
 
-function sentences(notes) {
-  return notes
+function getSentences(text) {
+  return text
     .split(/(?<=[.!?])\s+|\n+/)
-    .map(s => s.trim())
+    .map(item => item.trim())
     .filter(Boolean);
-}
-
-function makeSummary(notes) {
-  const parts = sentences(notes);
-  return parts.length > 5
-    ? parts.slice(0, 5).join(" ")
-    : notes;
-}
-
-function makePoints(notes) {
-  return sentences(notes)
-    .slice(0, 10)
-    .map((s, i) => `${i + 1}. ${s}`)
-    .join("\n") || notes;
 }
 
 function updateCounters() {
   const text = $("notes").value.trim();
   const words = text ? text.split(/\s+/).length : 0;
 
-  $("wordCount").textContent = `Words: ${words}`;
-  $("charCount").textContent =
-    `Characters: ${$("notes").value.length}`;
+  $("wordCount").textContent = `${words} words`;
+  $("charCount").textContent = `${$("notes").value.length} characters`;
+  $("statWords").textContent = words;
+}
+
+function makeSummary(text) {
+  const list = getSentences(text);
+
+  if (list.length <= 5) return text;
+
+  return list.slice(0, 5).join(" ");
+}
+
+function makePoints(text) {
+  const list = getSentences(text);
+
+  return list.slice(0, 10)
+    .map((item, index) => `${index + 1}. ${item}`)
+    .join("\n") || text;
+}
+
+function updatePointCount() {
+  const text = $("points").textContent;
+  const empty = text === defaultPoints;
+  const count = empty ? 0 : text.split("\n").filter(Boolean).length;
+
+  $("statPoints").textContent = count;
 }
 
 function updateProgress() {
-  const total = questions.length;
-  const percent = total ? Math.round(current / total * 100) : 0;
+  const percent = questions.length
+    ? Math.round(current / questions.length * 100)
+    : 0;
 
   $("progressFill").style.width = `${percent}%`;
-  $("progressLabel").textContent = `Quiz progress: ${percent}%`;
   $("progressTrack").setAttribute("aria-valuenow", percent);
 }
 
 function generate() {
-  const notes = $("notes").value.trim();
+  const text = $("notes").value.trim();
   const topic = $("topic").value;
 
-  if (!notes) {
+  if (!text) {
     showStatus("Please paste your study notes first.");
+    $("notes").focus();
     return;
   }
 
   if (topic === "summary") {
-    $("summary").textContent = makeSummary(notes);
-    showStatus("Summary created from your notes.");
-  } else if (topic === "important") {
-    $("points").textContent = makePoints(notes);
-    showStatus("Important points extracted.");
-  } else {
-    makeQuiz(notes, Number($("count").value));
+    $("summary").textContent = makeSummary(text);
+    showStatus("Your summary is ready.");
+    $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
   }
+
+  if (topic === "important") {
+    $("points").textContent = makePoints(text);
+    updatePointCount();
+    showStatus("Your important points are ready.");
+    $("results").scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+
+  makeQuiz(text, Number($("count").value));
 }
 
-function makeQuiz(notes, count) {
-  const lines = sentences(notes).filter(s => s.length > 25);
+function makeQuiz(text, count) {
+  const list = getSentences(text).filter(item => item.length > 25);
 
-  if (lines.length < 2) {
-    showStatus("Please paste at least 2 detailed sentences for a quiz.");
+  if (list.length < 2) {
+    showStatus("Please paste at least 2 detailed sentences to create a practice quiz.");
     return;
   }
 
   questions = [];
-  const total = Math.min(count, lines.length);
+  const total = Math.min(count, list.length);
 
   for (let i = 0; i < total; i++) {
-    const answerText = lines[i];
-    const otherOptions = lines
-      .filter((_, j) => j !== i)
+    const answerText = list[i];
+
+    const otherOptions = list
+      .filter((_, index) => index !== i)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
 
@@ -488,7 +1081,7 @@ function makeQuiz(notes, count) {
       .sort(() => Math.random() - 0.5);
 
     questions.push({
-      q: "Which statement appears in your notes?",
+      question: "Which statement appears in your notes?",
       options,
       answer: options.indexOf(answerText)
     });
@@ -497,106 +1090,117 @@ function makeQuiz(notes, count) {
   current = 0;
   correct = 0;
   answered = false;
+  quizStarted = true;
 
-  $("score").textContent = `Score: 0 / ${questions.length}`;
-  updateProgress();
+  $("statScore").textContent = "—";
+  $("quizBadge").textContent = "In progress";
+  $("quizFeedback").textContent = "";
+  $("quizSection").scrollIntoView({ behavior: "smooth", block: "start" });
+
   showQuestion();
-  showStatus("Quiz ready! Select an answer.");
+  updateProgress();
+  showStatus("Your practice quiz is ready.");
 }
 
 function showQuestion() {
-  if (current >= questions.length) {
-    $("quiz").textContent =
-      `Quiz completed! Final Score: ${correct} / ${questions.length}`;
+  const quiz = $("quiz");
+  const controls = $("quizControls");
 
-    $("quizControls").innerHTML = "";
+  quiz.replaceChildren();
+  controls.replaceChildren();
+  $("quizFeedback").textContent = "";
+
+  if (current >= questions.length) {
+    quiz.textContent = `Quiz completed! You scored ${correct} out of ${questions.length}.`;
+    $("quizBadge").textContent = "Completed";
+    $("statScore").textContent = `${correct}/${questions.length}`;
 
     const retry = document.createElement("button");
     retry.type = "button";
-    retry.textContent = "Try Again";
+    retry.className = "btn-primary";
+    retry.textContent = "↻ Try again";
     retry.addEventListener("click", generate);
-    $("quizControls").appendChild(retry);
-
-    $("score").textContent =
-      `Final Score: ${correct} / ${questions.length}`;
+    controls.appendChild(retry);
 
     updateProgress();
+    showStatus("Quiz completed. Great job practising!");
     return;
   }
 
   const q = questions[current];
-  $("quiz").innerHTML = "";
 
-  const title = document.createElement("strong");
-  title.textContent =
-    `Question ${current + 1} of ${questions.length}`;
-  $("quiz").appendChild(title);
+  const heading = document.createElement("p");
+  heading.className = "quiz-question";
+  heading.textContent = `Question ${current + 1} of ${questions.length}`;
 
   const prompt = document.createElement("p");
-  prompt.textContent = q.q;
-  prompt.style.marginTop = "12px";
-  $("quiz").appendChild(prompt);
+  prompt.textContent = q.question;
+  prompt.style.marginBottom = "12px";
+
+  quiz.append(heading, prompt);
 
   q.options.forEach((option, index) => {
     const label = document.createElement("label");
-    label.className = "option";
+    label.className = "quiz-option";
 
     const radio = document.createElement("input");
     radio.type = "radio";
-    radio.name = "answer";
+    radio.name = "quizAnswer";
     radio.value = index;
 
     const text = document.createElement("span");
     text.textContent = option;
 
     label.append(radio, text);
-    $("quiz").appendChild(label);
+    quiz.appendChild(label);
   });
-
-  $("quizControls").innerHTML = "";
 
   const check = document.createElement("button");
   check.type = "button";
-  check.textContent = "Check Answer";
+  check.className = "btn-primary";
+  check.textContent = "Check answer";
   check.addEventListener("click", checkAnswer);
-  $("quizControls").appendChild(check);
+  controls.appendChild(check);
 
+  $("quizBadge").textContent = "In progress";
   answered = false;
 }
 
 function checkAnswer() {
-  if (answered) {
-    showStatus("Click Next Question to continue.");
-    return;
-  }
+  if (answered) return;
 
-  const selected = document.querySelector(
-    'input[name="answer"]:checked'
-  );
+  const selected = document.querySelector('input[name="quizAnswer"]:checked');
 
   if (!selected) {
-    showStatus("Please select an answer.");
+    $("quizFeedback").textContent = "Please select an answer first.";
     return;
   }
 
   answered = true;
-  const q = questions[current];
-  const pick = Number(selected.value);
 
-  if (pick === q.answer) {
+  const q = questions[current];
+  const picked = Number(selected.value);
+
+  if (picked === q.answer) {
     correct++;
-    showStatus("Correct answer!");
+    $("quizFeedback").textContent = "✓ Correct answer!";
+    $("quizFeedback").style.color = "#168453";
   } else {
-    showStatus("Correct answer: " + q.options[q.answer]);
+    $("quizFeedback").textContent =
+      "Correct answer: " + q.options[q.answer];
+    $("quizFeedback").style.color = "#d97706";
   }
 
-  $("score").textContent =
-    `Score: ${correct} / ${questions.length}`;
+  $("scoreText");
+  $("statScore").textContent = `${correct}/${questions.length}`;
 
   const next = document.createElement("button");
   next.type = "button";
-  next.className = "secondary";
-  next.textContent = "Next Question";
+  next.className = "btn-secondary";
+  next.textContent = current === questions.length - 1
+    ? "View results"
+    : "Next question →";
+
   next.addEventListener("click", () => {
     current++;
     updateProgress();
@@ -606,11 +1210,11 @@ function checkAnswer() {
   $("quizControls").appendChild(next);
 }
 
-async function copyText(elementId, label) {
+async function copyContent(elementId, label) {
   const text = $(elementId).textContent.trim();
 
-  if (!text || text.includes("will appear here")) {
-    showStatus("There is no content to copy yet.");
+  if (!text || text === defaultSummary || text === defaultPoints) {
+    showStatus("Generate some content before copying.");
     return;
   }
 
@@ -618,30 +1222,29 @@ async function copyText(elementId, label) {
     await navigator.clipboard.writeText(text);
     showStatus(`${label} copied successfully.`);
   } catch (error) {
-    const area = document.createElement("textarea");
-    area.value = text;
-    document.body.appendChild(area);
-    area.select();
+    const temp = document.createElement("textarea");
+    temp.value = text;
+    temp.style.position = "fixed";
+    temp.style.opacity = "0";
+    document.body.appendChild(temp);
+    temp.select();
 
     const success = document.execCommand("copy");
-    area.remove();
+    temp.remove();
 
-    showStatus(success ? `${label} copied.` : "Copy failed. Please select and copy the text.");
+    showStatus(success ? `${label} copied successfully.` : "Copy failed. Please copy the text manually.");
   }
 }
 
-function downloadText(elementId, filename) {
+function downloadContent(elementId, filename) {
   const text = $(elementId).textContent.trim();
 
-  if (!text || text.includes("will appear here")) {
-    showStatus("There is no content to download yet.");
+  if (!text || text === defaultSummary || text === defaultPoints) {
+    showStatus("Generate some content before downloading.");
     return;
   }
 
-  const blob = new Blob([text], {
-    type: "text/plain;charset=utf-8"
-  });
-
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
 
@@ -657,57 +1260,61 @@ function downloadText(elementId, filename) {
 
 function clearAll() {
   $("notes").value = "";
-  $("summary").textContent = "Your summary will appear here.";
-  $("points").textContent = "Important points will appear here.";
-  $("quiz").textContent = "Select Generate Quiz to begin.";
-  $("quizControls").innerHTML = "";
-  $("score").textContent = "Your quiz score will appear here.";
-  $("topic").value = "summary";
+  $("summary").textContent = defaultSummary;
+  $("points").textContent = defaultPoints;
+  $("quiz").textContent = "Select the quiz option above and click Generate to begin.";
+  $("quizControls").replaceChildren();
+  $("quizFeedback").textContent = "";
   $("quizSettings").hidden = true;
+  $("topic").value = "summary";
+  $("quizBadge").textContent = "Not started";
+  $("statScore").textContent = "—";
 
   questions = [];
   current = 0;
   correct = 0;
   answered = false;
+  quizStarted = false;
 
   updateCounters();
+  updatePointCount();
   updateProgress();
   showStatus("");
 }
 
 $("notes").addEventListener("input", updateCounters);
-$("generateBtn").addEventListener("click", generate);
-$("clearBtn").addEventListener("click", clearAll);
 
 $("topic").addEventListener("change", () => {
   $("quizSettings").hidden = $("topic").value !== "quiz";
 });
 
-$("copyBtn").addEventListener("click", () =>
-  copyText("summary", "Summary")
+$("generateBtn").addEventListener("click", generate);
+$("clearBtn").addEventListener("click", clearAll);
+
+$("copySummary").addEventListener("click", () =>
+  copyContent("summary", "Summary")
 );
 
-$("downloadBtn").addEventListener("click", () =>
-  downloadText("summary", "study-summary.txt")
+$("downloadSummary").addEventListener("click", () =>
+  downloadContent("summary", "study-summary.txt")
 );
 
-$("copyPointsBtn").addEventListener("click", () =>
-  copyText("points", "Important points")
+$("copyPoints").addEventListener("click", () =>
+  copyContent("points", "Important points")
 );
 
-$("downloadPointsBtn").addEventListener("click", () =>
-  downloadText("points", "important-points.txt")
+$("downloadPoints").addEventListener("click", () =>
+  downloadContent("points", "important-points.txt")
 );
 
 $("themeBtn").addEventListener("click", () => {
   document.body.classList.toggle("dark");
-  const isDark = document.body.classList.contains("dark");
-
-  $("themeBtn").textContent =
-    isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+  const dark = document.body.classList.contains("dark");
+  $("themeBtn").textContent = dark ? "☀️ Light mode" : "🌙 Theme";
 });
 
 updateCounters();
+updatePointCount();
 updateProgress();
 </script>
 
