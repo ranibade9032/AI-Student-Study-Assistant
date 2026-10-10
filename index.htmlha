@@ -1,0 +1,108 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Student Study Assistant</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #10152f, #24245a, #49328a);
+      color: white;
+      min-height: 100vh;
+    }
+    header {
+      padding: 24px 8%;
+      border-bottom: 1px solid #ffffff25;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    main {
+      max-width: 950px;
+      margin: 65px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 { font-size: clamp(32px, 6vw, 52px); margin-bottom: 16px; }
+    .intro { color: #d5d9f5; line-height: 1.7; }
+    .panel {
+      margin: 32px auto;
+      padding: 28px;
+      max-width: 680px;
+      background: #ffffff12;
+      border: 1px solid #ffffff25;
+      border-radius: 20px;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 25px;
+    }
+    .feature {
+      padding: 20px;
+      background: #ffffff0d;
+      border: 1px solid #ffffff20;
+      border-radius: 14px;
+    }
+    .feature h3 { color: #c4b5fd; }
+    a.button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 14px 24px;
+      background: #8b5cf6;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 10px;
+    }
+    a.button:hover { background: #7041d8; }
+    footer { text-align: center; padding: 30px; color: #c4c9e6; }
+  </style>
+</head>
+<body>
+  <header>📚 AI Student Study Assistant</header>
+  <main>
+    <h1>Learn Smarter with AI</h1>
+    <p class="intro">
+      Your AI-powered study companion. Understand your notes,
+      revise important topics, and test your knowledge easily.
+    </p>
+
+    <section class="panel">
+      <h2>Your Personal AI Tutor</h2>
+      <p>Summarize notes, discover key points, and practice with quizzes.</p>
+      <a class="button"
+         href="https://ai-student-study-assistant-unki.onrender.com"
+         target="_blank" rel="noopener">
+        🚀 Open AI Study Assistant
+      </a>
+    </section>
+
+    <h2>Features</h2>
+    <section class="features">
+      <div class="feature">
+        <h3>📝 Smart Summaries</h3>
+        <p>Turn long study notes into simple summaries.</p>
+      </div>
+      <div class="feature">
+        <h3>💡 Important Points</h3>
+        <p>Find key ideas for quick revision.</p>
+      </div>
+      <div class="feature">
+        <h3>❓ Practice Quiz</h3>
+        <p>Test your knowledge with multiple-choice questions.</p>
+      </div>
+      <div class="feature">
+        <h3>🤖 AI Tutor</h3>
+        <p>Ask questions and learn step by step.</p>
+      </div>
+    </section>
+  </main>
+  <footer>Built with Python, Gradio and Google Gemini API</footer>
+</body>
+</html>
+```
