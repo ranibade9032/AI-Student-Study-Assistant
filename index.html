@@ -7,6 +7,28 @@
 <title>AI Student Study Assistant</title>
 
 <style>
+:root {
+  --bg: #eff6ff;
+  --card: #ffffff;
+  --panel: #f8fbff;
+  --text: #172554;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --border: #bfdbfe;
+  --soft: #dbeafe;
+}
+
+body.dark {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --panel: #172033;
+  --text: #e2e8f0;
+  --muted: #a5b4c7;
+  --primary: #60a5fa;
+  --border: #334155;
+  --soft: #263750;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -15,68 +37,100 @@
 
 body {
   font-family: Arial, sans-serif;
-  background: #eff6ff;
-  color: #172554;
+  background: var(--bg);
+  color: var(--text);
   min-height: 100vh;
+  transition: background .2s, color .2s;
 }
 
 header {
-  background: white;
-  padding: 20px 8%;
+  background: var(--card);
+  padding: 18px 7%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid #bfdbfe;
   gap: 12px;
   flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+
+header h2, h2, h3 {
+  color: var(--primary);
 }
 
 header h2 {
-  color: #1d4ed8;
+  font-size: 22px;
+}
+
+button, select, textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 15px;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 5px 5px 0 0;
+}
+
+button:hover {
+  opacity: .88;
+}
+
+.secondary {
+  background: var(--soft);
+  color: var(--text);
+}
+
+.theme-btn {
+  margin: 0;
 }
 
 .hero {
   text-align: center;
-  padding: 40px 15px 25px;
+  padding: 40px 16px 24px;
 }
 
 .hero h1 {
+  color: var(--primary);
   font-size: clamp(28px, 5vw, 40px);
-  color: #1d4ed8;
   margin-bottom: 12px;
 }
 
 .hero p {
-  color: #475569;
+  color: var(--muted);
   line-height: 1.7;
 }
 
 .container {
-  max-width: 1000px;
-  margin: 20px auto 50px;
-  padding: 25px;
-  background: white;
-  border: 1px solid #bfdbfe;
+  max-width: 1050px;
+  margin: 20px auto 40px;
+  padding: 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 18px;
-  box-shadow: 0 8px 25px #1d4ed81a;
+  box-shadow: 0 8px 28px #2563eb12;
 }
 
 .layout {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
-  gap: 22px;
+  gap: 20px;
 }
 
 .panel {
-  background: #f8fbff;
-  border: 1px solid #dbeafe;
-  border-radius: 14px;
-  padding: 20px;
   min-width: 0;
+  padding: 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
 }
 
 h2, h3 {
-  color: #1d4ed8;
   margin-bottom: 14px;
 }
 
@@ -84,114 +138,126 @@ label.field-label {
   display: block;
   font-weight: bold;
   margin: 15px 0 8px;
-  color: #1e40af;
 }
 
 textarea, select {
   width: 100%;
-  padding: 13px;
-  border: 1px solid #93c5fd;
+  padding: 12px;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: white;
-  color: #172554;
-  font: inherit;
+  background: var(--card);
+  color: var(--text);
 }
 
 textarea {
-  min-height: 180px;
+  min-height: 175px;
   resize: vertical;
+  line-height: 1.6;
 }
 
-button {
-  padding: 12px 15px;
-  border: 0;
-  border-radius: 9px;
-  background: #2563eb;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  margin: 7px 5px 0 0;
+textarea:focus, select:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
 }
 
-button:hover {
-  background: #1d4ed8;
-}
-
-.secondary {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.secondary:hover {
-  background: #bfdbfe;
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .result {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   line-height: 1.7;
-  background: white;
-  border: 1px solid #dbeafe;
+  min-height: 75px;
+  padding: 14px;
+  margin-top: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 15px;
-  margin-top: 15px;
-  min-height: 70px;
 }
 
 .hint {
-  color: #64748b;
+  color: var(--muted);
   font-size: 14px;
-  line-height: 1.6;
-}
-
-.option {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 11px;
-  margin: 8px 0;
-  background: white;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: normal;
-  color: #172554;
-}
-
-.option:hover {
-  background: #eff6ff;
-}
-
-.option input {
-  margin-top: 4px;
-  flex-shrink: 0;
+  line-height: 1.7;
 }
 
 .status {
+  color: var(--primary);
   margin-top: 12px;
-  color: #1d4ed8;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
-footer {
-  text-align: center;
-  padding: 25px;
-  color: #64748b;
+.option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 11px;
+  margin: 8px 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 1.5;
 }
 
-@media (max-width: 700px) {
+.option input {
+  margin-top: 4px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background: var(--soft);
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--primary);
+  border-radius: 99px;
+  transition: width .25s;
+}
+
+.result-actions {
+  margin-top: 8px;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media(max-width: 700px) {
   .layout {
     grid-template-columns: 1fr;
   }
 
   .container {
-    margin: 15px;
-    padding: 15px;
+    margin: 14px;
+    padding: 14px;
   }
 
   header {
-    padding: 18px;
+    padding: 16px;
+  }
+
+  .panel {
+    padding: 16px;
   }
 }
 </style>
@@ -201,15 +267,19 @@ footer {
 
 <header>
   <h2>🎓 AI Study Assistant</h2>
-  <span>Learn Smarter 💙</span>
+  <div>
+    <span>Learn Smarter 💙</span>
+    <button id="themeBtn" class="theme-btn secondary"
+      type="button" aria-label="Toggle color theme">
+      🌙 Dark Mode
+    </button>
+  </div>
 </header>
 
 <section class="hero">
   <h1>Your Personal AI Study Assistant</h1>
-  <p>
-    Understand your notes easily, find important points,<br>
-    and practise with quizzes.
-  </p>
+  <p>Understand your notes, find important points,<br>
+    and practise with quizzes.</p>
 </section>
 
 <main class="container">
@@ -226,20 +296,27 @@ footer {
         <option value="quiz">❓ Generate Quiz</option>
       </select>
 
-      <label class="field-label" for="notes">Paste Your Notes Here</label>
+      <label class="field-label" for="notes">
+        Paste Your Notes Here
+      </label>
       <textarea id="notes"
         placeholder="Paste your study notes here..."></textarea>
+
+      <div class="stats">
+        <span id="wordCount">Words: 0</span>
+        <span id="charCount">Characters: 0</span>
+      </div>
 
       <div id="quizSettings" hidden>
         <label class="field-label" for="count">Quiz Questions</label>
         <select id="count">
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
+          <option value="5">5 Questions</option>
+          <option value="10">10 Questions</option>
+          <option value="15">15 Questions</option>
         </select>
       </div>
 
-      <button id="generateBtn" type="button">Generate</button>
+      <button id="generateBtn" type="button">✨ Generate</button>
       <button id="clearBtn" class="secondary" type="button">
         Clear All
       </button>
@@ -249,27 +326,43 @@ footer {
 
     <aside class="panel">
       <h2>💡 How to Use</h2>
+      <p class="hint">1. Select a study topic.</p>
+      <p class="hint">2. Paste your notes.</p>
+      <p class="hint">3. Click Generate.</p>
+      <p class="hint">4. Read the result or answer the quiz.</p>
+      <p class="hint">5. Copy or download your summary.</p>
 
-      <p class="hint">1. Select a Study Topic.</p><br>
-      <p class="hint">2. Paste your study notes.</p><br>
-      <p class="hint">3. Click the Generate button.</p><br>
-      <p class="hint">4. Read the result or answer the quiz.</p><br>
-      <p class="hint">5. Use Clear All to start again.</p>
-
-      <h3 style="margin-top:25px">📊 Knowledge Check</h3>
+      <h3 style="margin-top:24px">📊 Knowledge Check</h3>
       <div id="score" class="result">
         Your quiz score will appear here.
+      </div>
+
+      <p id="progressLabel" class="hint" style="margin-top:12px">
+        Quiz progress: 0%
+      </p>
+      <div class="progress-track" role="progressbar"
+        aria-label="Quiz progress" aria-valuemin="0"
+        aria-valuemax="100" aria-valuenow="0" id="progressTrack">
+        <div id="progressFill" class="progress-fill"></div>
       </div>
     </aside>
 
   </div>
 
-  <div class="layout" style="margin-top:22px">
+  <div class="layout" style="margin-top:20px">
 
     <section class="panel">
       <h3>📝 Simple Summary</h3>
       <div id="summary" class="result">
         Your summary will appear here.
+      </div>
+      <div class="result-actions">
+        <button id="copyBtn" class="secondary" type="button">
+          📋 Copy Summary
+        </button>
+        <button id="downloadBtn" class="secondary" type="button">
+          📥 Download Summary
+        </button>
       </div>
     </section>
 
@@ -278,11 +371,17 @@ footer {
       <div id="points" class="result">
         Important points will appear here.
       </div>
+      <button id="copyPointsBtn" class="secondary" type="button">
+        📋 Copy Points
+      </button>
+      <button id="downloadPointsBtn" class="secondary" type="button">
+        📥 Download Points
+      </button>
     </section>
 
   </div>
 
-  <section class="panel" style="margin-top:22px">
+  <section class="panel" style="margin-top:20px">
     <h3>🧠 Quiz Practice</h3>
     <div id="quiz" class="result">
       Select Generate Quiz to begin.
@@ -308,44 +407,43 @@ function showStatus(message) {
   $("status").textContent = message;
 }
 
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, character => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[character]));
-}
-
 function sentences(notes) {
   return notes
     .split(/(?<=[.!?])\s+|\n+/)
-    .map(sentence => sentence.trim())
+    .map(s => s.trim())
     .filter(Boolean);
 }
 
 function makeSummary(notes) {
   const parts = sentences(notes);
-
-  if (parts.length === 0) {
-    return notes;
-  }
-
-  return parts.slice(0, 5).join(" ");
+  return parts.length > 5
+    ? parts.slice(0, 5).join(" ")
+    : notes;
 }
 
 function makePoints(notes) {
-  const parts = sentences(notes);
-
-  if (parts.length === 0) {
-    return notes;
-  }
-
-  return parts
+  return sentences(notes)
     .slice(0, 10)
-    .map((sentence, index) => `${index + 1}. ${sentence}`)
-    .join("\n");
+    .map((s, i) => `${i + 1}. ${s}`)
+    .join("\n") || notes;
+}
+
+function updateCounters() {
+  const text = $("notes").value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+
+  $("wordCount").textContent = `Words: ${words}`;
+  $("charCount").textContent =
+    `Characters: ${$("notes").value.length}`;
+}
+
+function updateProgress() {
+  const total = questions.length;
+  const percent = total ? Math.round(current / total * 100) : 0;
+
+  $("progressFill").style.width = `${percent}%`;
+  $("progressLabel").textContent = `Quiz progress: ${percent}%`;
+  $("progressTrack").setAttribute("aria-valuenow", percent);
 }
 
 function generate() {
@@ -359,7 +457,7 @@ function generate() {
 
   if (topic === "summary") {
     $("summary").textContent = makeSummary(notes);
-    showStatus("Summary generated from your notes.");
+    showStatus("Summary created from your notes.");
   } else if (topic === "important") {
     $("points").textContent = makePoints(notes);
     showStatus("Important points extracted.");
@@ -369,38 +467,30 @@ function generate() {
 }
 
 function makeQuiz(notes, count) {
-  const lines = sentences(notes).filter(
-    sentence => sentence.length > 25
-  );
+  const lines = sentences(notes).filter(s => s.length > 25);
 
   if (lines.length < 2) {
-    showStatus(
-      "Quiz kosam at least 2 detailed sentences paste cheyyi."
-    );
+    showStatus("Please paste at least 2 detailed sentences for a quiz.");
     return;
   }
 
   questions = [];
-
-  // This is a basic practice quiz using sentences from your notes.
-  // It does not generate AI-written questions.
   const total = Math.min(count, lines.length);
 
   for (let i = 0; i < total; i++) {
-    const correctText = lines[i];
-
-    const distractors = lines
-      .filter((_, index) => index !== i)
+    const answerText = lines[i];
+    const otherOptions = lines
+      .filter((_, j) => j !== i)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3);
 
-    const options = [correctText, ...distractors]
+    const options = [answerText, ...otherOptions]
       .sort(() => Math.random() - 0.5);
 
     questions.push({
       q: "Which statement appears in your notes?",
-      options: options,
-      answer: options.indexOf(correctText)
+      options,
+      answer: options.indexOf(answerText)
     });
   }
 
@@ -409,7 +499,7 @@ function makeQuiz(notes, count) {
   answered = false;
 
   $("score").textContent = `Score: 0 / ${questions.length}`;
-
+  updateProgress();
   showQuestion();
   showStatus("Quiz ready! Select an answer.");
 }
@@ -419,33 +509,57 @@ function showQuestion() {
     $("quiz").textContent =
       `Quiz completed! Final Score: ${correct} / ${questions.length}`;
 
-    $("quizControls").innerHTML =
-      '<button type="button" id="retryBtn">Try Again</button>';
+    $("quizControls").innerHTML = "";
 
-    $("retryBtn").addEventListener("click", generate);
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.textContent = "Try Again";
+    retry.addEventListener("click", generate);
+    $("quizControls").appendChild(retry);
 
     $("score").textContent =
       `Final Score: ${correct} / ${questions.length}`;
 
+    updateProgress();
     return;
   }
 
-  const question = questions[current];
+  const q = questions[current];
+  $("quiz").innerHTML = "";
 
-  $("quiz").innerHTML =
-    `<b>Question ${current + 1} of ${questions.length}</b>` +
-    `<p style="margin-top:12px">${escapeHTML(question.q)}</p>` +
-    question.options.map((option, index) =>
-      `<label class="option">
-        <input type="radio" name="answer" value="${index}">
-        <span>${escapeHTML(option)}</span>
-      </label>`
-    ).join("");
+  const title = document.createElement("strong");
+  title.textContent =
+    `Question ${current + 1} of ${questions.length}`;
+  $("quiz").appendChild(title);
 
-  $("quizControls").innerHTML =
-    '<button type="button" id="checkBtn">Check Answer</button>';
+  const prompt = document.createElement("p");
+  prompt.textContent = q.q;
+  prompt.style.marginTop = "12px";
+  $("quiz").appendChild(prompt);
 
-  $("checkBtn").addEventListener("click", checkAnswer);
+  q.options.forEach((option, index) => {
+    const label = document.createElement("label");
+    label.className = "option";
+
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "answer";
+    radio.value = index;
+
+    const text = document.createElement("span");
+    text.textContent = option;
+
+    label.append(radio, text);
+    $("quiz").appendChild(label);
+  });
+
+  $("quizControls").innerHTML = "";
+
+  const check = document.createElement("button");
+  check.type = "button";
+  check.textContent = "Check Answer";
+  check.addEventListener("click", checkAnswer);
+  $("quizControls").appendChild(check);
 
   answered = false;
 }
@@ -461,48 +575,93 @@ function checkAnswer() {
   );
 
   if (!selected) {
-    showStatus("Please select an option.");
+    showStatus("Please select an answer.");
     return;
   }
 
   answered = true;
+  const q = questions[current];
+  const pick = Number(selected.value);
 
-  const question = questions[current];
-  const picked = Number(selected.value);
-
-  if (picked === question.answer) {
+  if (pick === q.answer) {
     correct++;
     showStatus("Correct answer!");
   } else {
-    showStatus(
-      "Correct answer: " + question.options[question.answer]
-    );
+    showStatus("Correct answer: " + q.options[q.answer]);
   }
 
   $("score").textContent =
     `Score: ${correct} / ${questions.length}`;
 
-  $("quizControls").innerHTML +=
-    '<button type="button" class="secondary" id="nextBtn">' +
-    'Next Question</button>';
+  const next = document.createElement("button");
+  next.type = "button";
+  next.className = "secondary";
+  next.textContent = "Next Question";
+  next.addEventListener("click", () => {
+    current++;
+    updateProgress();
+    showQuestion();
+  });
 
-  $("nextBtn").addEventListener("click", nextQuestion);
+  $("quizControls").appendChild(next);
 }
 
-function nextQuestion() {
-  current++;
-  showQuestion();
+async function copyText(elementId, label) {
+  const text = $(elementId).textContent.trim();
+
+  if (!text || text.includes("will appear here")) {
+    showStatus("There is no content to copy yet.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    showStatus(`${label} copied successfully.`);
+  } catch (error) {
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+
+    const success = document.execCommand("copy");
+    area.remove();
+
+    showStatus(success ? `${label} copied.` : "Copy failed. Please select and copy the text.");
+  }
+}
+
+function downloadText(elementId, filename) {
+  const text = $(elementId).textContent.trim();
+
+  if (!text || text.includes("will appear here")) {
+    showStatus("There is no content to download yet.");
+    return;
+  }
+
+  const blob = new Blob([text], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+  showStatus(`${filename} downloaded.`);
 }
 
 function clearAll() {
   $("notes").value = "";
-
   $("summary").textContent = "Your summary will appear here.";
   $("points").textContent = "Important points will appear here.";
   $("quiz").textContent = "Select Generate Quiz to begin.";
   $("quizControls").innerHTML = "";
   $("score").textContent = "Your quiz score will appear here.";
-
   $("topic").value = "summary";
   $("quizSettings").hidden = true;
 
@@ -511,15 +670,45 @@ function clearAll() {
   correct = 0;
   answered = false;
 
+  updateCounters();
+  updateProgress();
   showStatus("");
 }
+
+$("notes").addEventListener("input", updateCounters);
+$("generateBtn").addEventListener("click", generate);
+$("clearBtn").addEventListener("click", clearAll);
 
 $("topic").addEventListener("change", () => {
   $("quizSettings").hidden = $("topic").value !== "quiz";
 });
 
-$("generateBtn").addEventListener("click", generate);
-$("clearBtn").addEventListener("click", clearAll);
+$("copyBtn").addEventListener("click", () =>
+  copyText("summary", "Summary")
+);
+
+$("downloadBtn").addEventListener("click", () =>
+  downloadText("summary", "study-summary.txt")
+);
+
+$("copyPointsBtn").addEventListener("click", () =>
+  copyText("points", "Important points")
+);
+
+$("downloadPointsBtn").addEventListener("click", () =>
+  downloadText("points", "important-points.txt")
+);
+
+$("themeBtn").addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  const isDark = document.body.classList.contains("dark");
+
+  $("themeBtn").textContent =
+    isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+});
+
+updateCounters();
+updateProgress();
 </script>
 
 </body>
